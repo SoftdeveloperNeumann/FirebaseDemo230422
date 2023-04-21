@@ -8,7 +8,9 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import de.softdeveloper.firebasedemo.databinding.ActivityMainBinding
 
-data class User(val name:String, val first:String, val value:String)
+data class User(val name:String, val first:String, val value:String){
+    constructor():this("","","")
+}
 
 class MainActivity : AppCompatActivity() {
 
@@ -53,6 +55,31 @@ class MainActivity : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(this@MainActivity, "Fehler beim lesen der Daten", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        // Listener für Childs
+        userRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+               val user = snapshot.getValue(User::class.java)
+                binding.tvOutput.text = "${user?.first} ${user?.name} schreibt ${user?.value}"
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                val user = snapshot.getValue(User::class.java)
+                binding.tvOutput.text = "${user?.first} ${user?.name} ändert ${user?.value}"
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
             }
         })
     }
